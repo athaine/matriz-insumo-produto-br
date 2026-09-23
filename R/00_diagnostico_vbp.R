@@ -23,6 +23,30 @@
 # (D.Bn e a inversa de Leontief), que É auditável com os dados disponíveis
 # — ver 03_validar_leontief.R.
 
+# --- localizar a raiz do projeto (funciona mesmo se o R abrir em R/ ou numa subpasta) ---
+local({
+  dir <- normalizePath(getwd(), winslash = "/")
+  repeat {
+    if (file.exists(file.path(dir, "R", "utils_setores.R"))) { setwd(dir); break }
+    pai <- dirname(dir)
+    if (pai == dir) {
+      stop(
+        "Nao encontrei a raiz do projeto a partir de: ", getwd(), "\n",
+        "Abra o arquivo matriz-insumo-produto-br.Rproj (RStudio) ou use setwd() para a pasta ",
+        "que contem 'R', 'data' e 'tests' (a pasta que tem o README.md).",
+        call. = FALSE
+      )
+    }
+    dir <- pai
+  }
+  message("Raiz do projeto: ", getwd())
+})
+
+if (!file.exists("data/processed/tabelas_raw.rds")) {
+  stop("Arquivo data/processed/tabelas_raw.rds não encontrado.\n",
+       "Rode antes: source(\"R/run_all.R\")", call. = FALSE)
+}
+
 source("R/utils_setores.R")
 
 tabelas_raw <- readRDS("data/processed/tabelas_raw.rds")
