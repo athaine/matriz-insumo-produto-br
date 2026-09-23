@@ -96,24 +96,43 @@ O arquivo original (`data/raw/`) traz 15 tabelas em abas separadas:
 
 ## Como reproduzir
 
+### 1. Baixar o projeto
+Na página do repositório, clique em **Code → Download ZIP** e extraia o arquivo.
+(Se usa git: `git clone <url-do-repositorio>`.)
+
+> **Atenção:** o ZIP do GitHub costuma extrair uma pasta dentro de outra
+> (`matriz-insumo-produto-br/matriz-insumo-produto-br/`). A pasta do projeto é a
+> **de dentro**, a que contém o `README.md`, as pastas `R/`, `data/`, `tests/` e o arquivo `.Rproj`.
+
+### 2. Abrir o projeto
+- **RStudio (recomendado):** dê dois cliques em `matriz-insumo-produto-br.Rproj`.
+- **R puro:** use `setwd()` com o caminho da pasta do projeto no seu computador
+  (dica: no Explorador de Arquivos, clique na barra de endereço, copie o caminho e troque `\` por `/`):
 ```r
-# 1. instalar as dependências (readxl, dplyr, tidyr, tibble, testthat, rmarkdown, knitr)
-install.packages(c("readxl", "dplyr", "tidyr", "tibble", "testthat", "rmarkdown", "knitr"))
-# ou, se preferir isolar o ambiente do projeto:
-# renv::init(); renv::snapshot()
-
-# 2. rodar o pipeline completo, a partir da raiz do projeto
-source("R/run_all.R")
-
-# 3. (opcional) rodar o diagnóstico documentado da tentativa de reconstrução de Bn
-source("R/00_diagnostico_vbp.R")
-
-# 4. checar a validação com os testes automatizados
-testthat::test_dir("tests/testthat")
-
-# 5. gerar a nota técnica em HTML
-rmarkdown::render("docs/nota_tecnica.Rmd")
+  setwd("COLE/AQUI/O/CAMINHO/DA/PASTA/DO/PROJETO")
 ```
+
+### 3. Instalar as dependências (só na primeira vez)
+```r
+install.packages(c("readxl", "dplyr", "tidyr", "tibble", "testthat", "rmarkdown", "knitr"))
+```
+> No Windows pode aparecer um aviso sobre o *Rtools*. Pode ignorar.
+
+### 4. Rodar
+```r
+source("R/run_all.R")                        # pipeline completo
+testthat::test_dir("tests/testthat")         # testes de validação
+source("R/00_diagnostico_vbp.R")             # (opcional) diagnóstico de Bn
+rmarkdown::render("docs/nota_tecnica.Rmd")   # nota técnica em HTML
+```
+O `run_all.R` imprime `Raiz do projeto: ...` no começo. Se esse caminho estiver certo, está tudo bem.
+
+### Problemas comuns
+| Mensagem | O que fazer |
+|---|---|
+| `Nao encontrei a raiz do projeto` | O R não está dentro da pasta do projeto. Use o passo 2. |
+| `Nenhuma planilha .xls/.xlsx encontrada` | Coloque o arquivo da MIP 2015 nível 20 do IBGE em `data/raw/`. |
+| `Pacotes faltando` | Rode o passo 3. |
 
 ## Dependências
 
@@ -127,4 +146,5 @@ Código sob licença MIT (ver `LICENSE`). Dados originais são públicos, de tit
 ## Referência
 
 IBGE. **Matriz de Insumo-Produto — 2015**. Rio de Janeiro: IBGE, Coordenação de Contas
-Nacionais.
+Nacionais. Link: https://www.ibge.gov.br/estatisticas/economicas/contas-nacionais/9054-contas-regionais-do-brasil.html?edicao=45139&t=resultados
+
