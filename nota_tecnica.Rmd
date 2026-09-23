@@ -1,0 +1,96 @@
+---
+title: "Nota Técnica — Validação da Matriz de Insumo-Produto 2015 (nível 20) e Indicadores de Encadeamento"
+author: "Reprodução em R a partir de dados públicos do IBGE"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+knitr::opts_knit$set(root.dir = "..")
+```
+
+## 1. Objetivo
+
+Esta nota documenta a validação algébrica da Matriz de Insumo-Produto (MIP) do Brasil, 2015,
+nível 20 setores, publicada pelo IBGE, e o cálculo dos indicadores de encadeamento setorial
+(Rasmussen-Hirschman) a partir dela.
+
+## 2. Dados
+
+Fonte: IBGE, Diretoria de Pesquisas, Coordenação de Contas Nacionais — Matriz de
+Insumo-Produto 2015, nível 20. Arquivo original em `data/raw/`.
+
+## 3. Validação: D · Bn e a inversa de Leontief
+
+```{r}
+validacao <- readRDS("data/processed/validacao_leontief.rds")
+```
+
+Recalculamos `A = D %*% Bn` a partir das matrizes oficiais D (Tabela 13, participação
+setorial) e Bn (Tabela 11, coeficientes técnicos dos insumos nacionais), e comparamos com
+a matriz D.Bn publicada na Tabela 14:
+
+```{r}
+cat("Diferença máxima (A recalculada vs. Tabela 14):",
+    format(validacao$diff_A_max, scientific = TRUE), "\n")
+```
+
+Em seguida recalculamos `L = (I - A)^-1` e comparamos com a matriz de Leontief publicada
+na Tabela 15:
+
+```{r}
+cat("Diferença máxima (L recalculada vs. Tabela 15):",
+    format(validacao$diff_L_max, scientific = TRUE), "\n")
+```
+
+Ambas as diferenças são da ordem de grandeza do erro de ponto flutuante (`1e-14` a `1e-16`),
+o que confirma que o encadeamento D → A → L reproduz exatamente a metodologia do IBGE, com
+os dados disponíveis nesta planilha.
+
+### O que não foi possível validar com este arquivo
+
+Testamos a hipótese de reconstruir a própria matriz Bn a partir de valores absolutos
+(consumo intermediário da Tabela 02 dividido pelo Valor Bruto da Produção obtido a partir
+da Tabela 01). O resultado não reproduziu a Tabela 11 oficial (diferença muito acima de
+erro de arredondamento — ver `R/00_diagnostico_vbp.R` para o código e os números exatos).
+Isso indica que o VBP usado pelo IBGE para esse cálculo depende de ajustes (produção
+secundária por atividade, base de preços) não detalhados nesta planilha de nível 20.
+Por isso este repositório parte das matrizes já oficiais (Bn, D) para validar a etapa
+seguinte, que é a que os dados disponíveis permitem comprovar com rigor.
+
+## 4. Indicadores de encadeamento
+
+```{r}
+indicadores <- readRDS("data/processed/indicadores.rds")
+knitr::kable(
+  indicadores[, c("codigo", "descricao", "multiplicador", "ligacao_para_tras", "ligacao_para_frente")],
+  digits = 3,
+  col.names = c("Código", "Setor", "Multiplicador", "Lig. p/ trás", "Lig. p/ frente")
+)
+```
+
+## 5. Classificação de setores-chave
+
+```{r}
+classificados <- readRDS("data/processed/setores_classificados.rds")
+knitr::kable(
+  classificados[, c("codigo", "descricao", "classe")],
+  col.names = c("Código", "Setor", "Classificação")
+)
+```
+
+```{r}
+setores_chave <- classificados[classificados$classe == "Setor-chave", ]
+cat("Setores-chave identificados (2015, nível 20):", nrow(setores_chave), "\n")
+```
+
+## 6. Referências
+
+- IBGE. *Matriz de Insumo-Produto — 2015*. Rio de Janeiro: IBGE, Coordenação de Contas
+  Nacionais.
+- MILLER, R. E.; BLAIR, P. D. *Input-Output Analysis: Foundations and Extensions*. 2. ed.
+  Cambridge University Press, 2009.
+- RASMUSSEN, P. N. *Studies in Inter-Sectoral Relations*. Amsterdam: North-Holland, 1956.
+- HIRSCHMAN, A. O. *The Strategy of Economic Development*. New Haven: Yale University
+  Press, 1958.
