@@ -18,9 +18,23 @@
 library(readxl)
 source("R/utils_setores.R")
 
-caminho_raw <- "data/raw/matriz_insumo_produto_2015_nivel20_ibge.xls"
+# Procura o arquivo do IBGE em data/raw/ (qualquer .xls ou .xlsx), sem depender
+# do nome exato -- o nome muda conforme o download.
+candidatos <- list.files("data/raw", pattern = "\\.xlsx?$", full.names = TRUE, ignore.case = TRUE)
+candidatos <- candidatos[!grepl("^~\\$", basename(candidatos))]  # ignora temporarios do Excel
 
-stopifnot(file.exists(caminho_raw))
+if (length(candidatos) == 0) {
+  stop(
+    "Nenhuma planilha .xls/.xlsx encontrada em: ", normalizePath("data/raw", mustWork = FALSE), "\n",
+    "Coloque nessa pasta o arquivo da MIP 2015 nivel 20 do IBGE.",
+    call. = FALSE
+  )
+}
+if (length(candidatos) > 1) {
+  message("Varias planilhas em data/raw/; usando a primeira: ", basename(candidatos[1]))
+}
+caminho_raw <- candidatos[1]
+message("Lendo: ", caminho_raw)
 
 tabelas_raw <- list(
   Bn     = ler_bloco_ibge(caminho_raw, sheet = "11"),
