@@ -1,0 +1,19 @@
+# R
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# renv
+renv/library/
+renv/staging/
+renv/python/
+renv/sandbox/
+
+# outputs gerados pelo pipeline (reprodutíveis via R/run_all.R)
+data/processed/*.rds
+docs/nota_tecnica.html
+
+# sistema
+.DS_Store

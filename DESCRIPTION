@@ -1,0 +1,17 @@
+Package: matrizinsumoprodutobr
+Title: Validação e Indicadores Estruturais da Matriz de Insumo-Produto do Brasil (2015, nível 20)
+Version: 0.1.0
+Type: Project
+License: MIT
+Encoding: UTF-8
+Depends: R (>= 4.2)
+Imports:
+    readxl,
+    dplyr,
+    tidyr,
+    tibble
+Suggests:
+    testthat (>= 3.0.0),
+    rmarkdown,
+    knitr
+Config/testthat/edition: 3
