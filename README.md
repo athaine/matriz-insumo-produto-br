@@ -7,8 +7,8 @@ Leontief oficial e cálculo de indicadores de encadeamento setorial.
 ## Motivação
 
 Este repositório documenta, de forma reprodutível, a metodologia de estimação e validação de
-matrizes insumo-produto nacionais — coeficientes técnicos, matriz inversa de Leontief,
-multiplicadores e indicadores de encadeamento — a partir da base pública do Sistema de Contas
+matrizes insumo-produto nacionais, coeficientes técnicos, matriz inversa de Leontief,
+multiplicadores e indicadores de encadeamento, a partir da base pública do Sistema de Contas
 Nacionais do IBGE. O código não afirma nada que os dados originais não sustentem: quando uma
 hipótese de cálculo foi testada e não se confirmou, isso está documentado, não escondido
 (ver seção "O que este repositório não faz").
